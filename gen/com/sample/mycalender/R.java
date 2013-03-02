@@ -15,6 +15,7 @@ public final class R {
         public static final int menu4=0x7f020001;
     }
     public static final class id {
+        public static final int add_content=0x7f070007;
         public static final int btnNextMonth=0x7f070001;
         public static final int btnPrvMonth=0x7f070000;
         public static final int customCalendarView1=0x7f070002;
@@ -33,6 +34,7 @@ public final class R {
     public static final class string {
         public static final int app_name=0x7f040000;
         public static final int hello_world=0x7f040001;
+        public static final int menu_add_content=0x7f040008;
         public static final int menu_calendar_day_of_week=0x7f040007;
         public static final int menu_calendar_normal_view=0x7f040006;
         public static final int menu_calendar_view_setting=0x7f040005;

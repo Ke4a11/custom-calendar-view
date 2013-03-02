@@ -48,6 +48,7 @@ public class CustomCalendarView extends View {
 	//	色情報
 	protected int selCellBackColorInt = Color.parseColor("#FF3333ff");
 	protected int selCellFontColorInt = Color.parseColor("#FFFFFFFF");
+	protected int regContentColorInt = Color.parseColor("#55CCFF00");
 	protected int selSepLineColorInt = Color.parseColor("#FF000000");
 	protected int selectedCellColorInt = Color.parseColor("#55FFCC66");
 	protected int sundayTextColorInt = Color.parseColor("#FFFF0000");
@@ -58,6 +59,7 @@ public class CustomCalendarView extends View {
 	protected Paint selCellBackColor = new Paint();
 	protected Paint selSepLineColor = new Paint();
 	protected Paint selectedCellColor = new Paint();
+	protected Paint regContentColor = new Paint();
 	protected Paint weekdayText = new Paint(Paint.SUBPIXEL_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
 	protected Paint sundayText = new Paint(Paint.SUBPIXEL_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
 	protected Paint saturdayText = new Paint(Paint.SUBPIXEL_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
@@ -78,11 +80,13 @@ public class CustomCalendarView extends View {
 	};
 	//protected DateInfoParcelable[][] monthDayInfo = new DateInfoParcelable[this.weekNumCount][this.weekdayCount];
 	protected MonthlyDate[][] monthlyDate = new MonthlyDate[this.weekNumCount][this.weekdayCount];
-	protected List<MonthlyDate> monthlyDateList = null;
 	protected int[] headerIndex = new int[7];
 
 	//	カレンダーの表示形式設定
 	private CalcCalendarFactory.CalendarType calendarType = CalcCalendarFactory.CalendarType.NORMAL;
+
+	//	コンテンツの有無を示す矩形
+	private List<Rect> rectList = new ArrayList<Rect>();
 
 	/**
 	 * 各種パラメータの初期化とカレンダーの算出を行う。
@@ -94,6 +98,7 @@ public class CustomCalendarView extends View {
 		this.selCellBackColor.setColor(this.selCellBackColorInt);
 		this.selSepLineColor.setColor(this.selSepLineColorInt);
 		this.selectedCellColor.setColor(this.selectedCellColorInt);
+		this.regContentColor.setColor(this.regContentColorInt);
 		this.sundayText.setColor(this.sundayTextColorInt);
 		this.saturdayText.setColor(this.thursdayTextColorInt);
 
@@ -203,8 +208,9 @@ public class CustomCalendarView extends View {
 		this.drawHeader(canvas);
 		this.drawDate(canvas);
 		this.select();
-		canvas.drawRect(this.todayRect, this.selectedCellColor);
-		this.invalidate();
+		this.drawRect(canvas);
+
+		//this.invalidate();
 	}
 
 	/**
@@ -301,6 +307,21 @@ public class CustomCalendarView extends View {
 				xPos += this.cellWidth;
 			}
 		}
+	}
+
+	/**
+	 * カレンダーの内容を描画する。
+	 * @param canvas
+	 */
+	private void drawRect(Canvas canvas) {
+		if (null != this.rectList) {
+			for (Rect rect : this.rectList) {
+				canvas.drawRect(rect, this.regContentColor);
+			}
+		}
+
+		//	選択された日を強調表示する。
+		canvas.drawRect(this.todayRect, this.selectedCellColor);
 	}
 
 
@@ -404,7 +425,7 @@ public class CustomCalendarView extends View {
 		if (this.monthlyDate[rowCount][colCount] != null) {
 			this.selectedRow = rowCount;
 			this.selectedCol = colCount;
-			this.select();
+			//this.select();
 		}
 	}
 
@@ -418,6 +439,44 @@ public class CustomCalendarView extends View {
 				(int)(this.headerHeight + this.cellHeight * this.selectedRow),
 				(int)(this.cellWidth * (this.selectedCol + 1)),
 				(int)(this.headerHeight + this.cellHeight * (this.selectedRow + 1)));
+	}
+
+	/**
+	 * 選択された日にちに対して、DateContentクラスを登録する。
+	 * @param content	登録するコンテンツ
+	 */
+	public void addContent(DateContent content) {
+		if (false == (this.monthlyDate[selectedRow][selectedCol]).isDateContent()) {	// 矩形の重複防止
+			//	選択されたセルに対応する位置に、強調表示用の矩形を登録する。
+			this.rectList.add(new Rect(
+					(int)(this.cellWidth * this.selectedCol),
+					(int)(this.headerHeight + this.cellHeight * this.selectedRow),
+					(int)(this.cellWidth * (this.selectedCol + 1)),
+					(int)(this.headerHeight + this.cellHeight * (this.selectedRow + 1))));
+		}
+
+		//	選択されたセルに、コンテンツを登録する。
+		(this.monthlyDate[selectedRow][selectedCol]).addDateContent(content);
+
+	}
+
+	/**
+	 * 全コンテンツ情報を削除する。
+	 */
+	public void clearContent() {
+		this.rectList.clear();		// 矩形情報の削除
+
+		// 日にちに登録されたコンテンツを削除
+		for (MonthlyDate[] array : monthlyDate) {
+			for (MonthlyDate element : array) {
+				if ((null != element ) &&
+					(true == element.isDateContent())) {
+					element.clearContent();
+				}
+			}
+		}
+
+		this.invalidate();
 	}
 
 	/**
@@ -437,19 +496,6 @@ public class CustomCalendarView extends View {
 				}
 			}
 		}
-	}
-
-	/**
-	 * カレンダーで強調表示する日付のリストに、日付を追加する。
-	 * 格納する日付は、一ヶ月分のみとする。選択されている月が
-	 * 変更される度に、更新する。
-	 * @param date
-	 */
-	void addDate(MonthlyDate date) {
-		if (this.monthlyDateList == null) {
-			this.monthlyDateList = new ArrayList<MonthlyDate>();
-		}
-		monthlyDateList.add(date);
 	}
 
 	/**

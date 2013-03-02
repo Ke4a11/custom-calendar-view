@@ -7,6 +7,7 @@ public class MonthlyDate {
 	private int month;
 	private int dayOfMonth;
 	private int dayOfWeekIndex;
+	private DateContent dateContent = null;
 
 	private Calendar calendar = Calendar.getInstance();
 
@@ -26,12 +27,9 @@ public class MonthlyDate {
 		this.month = month;
 		this.dayOfMonth = dayOfMonth;
 
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(Calendar.YEAR, year);
-		calendar.set(Calendar.MONTH, month);
-		calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
-
+		this.calendar.set(Calendar.YEAR, year);
+		this.calendar.set(Calendar.MONTH, month);
+		this.calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 	}
 
 	/**
@@ -58,11 +56,62 @@ public class MonthlyDate {
 		return this.dayOfMonth;
 	}
 
+	/**
+	 * 週の曜日を返す。
+	 * 日曜日を1とした各曜日
+	 * @return
+	 */
 	public int getDayOfWeek() {
 		return this.dayOfWeekIndex;
 	}
 
+	/**
+	 * 日にちを設定する。
+	 * @param dayOfMonth
+	 */
 	public void setDate(int dayOfMonth) {
 		this.dayOfMonth = dayOfMonth;
+	}
+
+	/**
+	 * コンテンツリストを追加する。
+	 * @param dateContent
+	 */
+	public void addDateContent(DateContent dateContent) {
+		if (this.dateContent == null)
+			this.dateContent = new DateContent();
+
+		for (StringBuffer list : dateContent.getContentList()) {
+			this.dateContent.addContent(list.toString());	//	コンテンツの内容をコピー
+		}
+	}
+
+	/**
+	 * コンテンツを取得する。
+	 * @return
+	 */
+	public DateContent getDateContent() {
+		return this.dateContent;
+	}
+
+	/**
+	 * コンテンツをセットする。
+	 * @param dateContent
+	 */
+	public void setDateContent(DateContent dateContent) {
+		this.dateContent = dateContent;
+	}
+
+	/**
+	 * コンテンツの登録状態を取得する
+	 * @return
+	 */
+	public boolean isDateContent() {
+		return this.dateContent == null ? false : true;
+	}
+
+	public void clearContent() {
+		this.dateContent.clearList();
+		this.dateContent = null;
 	}
 }

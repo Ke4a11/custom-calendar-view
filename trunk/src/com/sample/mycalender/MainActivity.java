@@ -45,6 +45,7 @@ public class MainActivity extends Activity {
 		} else {
 			customCalendar.setMonth(customCalendar.getMonth() + 1);
 		}
+		customCalendar.clearContent();
 		this.dateChanged();
 	}
 
@@ -56,6 +57,7 @@ public class MainActivity extends Activity {
 		} else {
 			customCalendar.setMonth(customCalendar.getMonth() - 1);
 		}
+		customCalendar.clearContent();
 		this.dateChanged();
 	}
 
@@ -85,6 +87,10 @@ public class MainActivity extends Activity {
 
 		case R.id.set_day_of_week_view:
 			customCalendar.changeStyle(CalcCalendarFactory.CalendarType.DAY_OF_WEEK);
+			break;
+
+		case R.id.add_content:
+			customCalendar.addContent(new DateContent());
 			break;
 
 		default:

@@ -9,5 +9,6 @@
     <string name="menu_calendar_view_setting">表示</string>
     <string name="menu_calendar_normal_view">通常表示</string>
     <string name="menu_calendar_day_of_week">曜日基準表示</string>
+    <string name="menu_add_content">追加</string>
 
 </resources>
